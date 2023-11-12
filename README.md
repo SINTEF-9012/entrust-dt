@@ -38,7 +38,7 @@ yarn run dev
 Open the dashboard in browser: http://localhost:3000, choose "New Dashboard". 
 Log in with user name: neo4j, password: entrust-neo4j.
 
-If the database is empty, load a sample by pressing load dashboard button in left side panel. Choose "Select from file", and choose the sample database (json-file) in the "samples" folder in this repo. Alternatively, open Neo4j Browser at http://localhost:7474. Copy the content in samples and past it into the query box of the Neo4j browser, then execute the query.
+If the database is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the most recent dashboard from the "samples" folder. To get the actual data, Open Neo4j Browser at http://localhost:7474. Copy the content in sample-data.cypher and past it into the query box of the Neo4j browser, then execute the query.
 
 ## User Guide for NeoDash
 

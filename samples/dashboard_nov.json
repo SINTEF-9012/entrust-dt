@@ -1,0 +1,43 @@
+{
+  "title": "ENTRUST - TELLU",
+  "version": "2.2",
+  "settings": {
+    "pagenumber": 0,
+    "editable": true,
+    "fullscreenEnabled": false,
+    "parameters": {
+      "neodash_annotation_endpoint": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg/1920px-Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg",
+      "neodash_annotation_endpoint_display": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg/1920px-Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg",
+      "neodash_asset_layer": "Physical",
+      "neodash_asset_layer_display": "Physical",
+      "main_selected_node": 15
+    }
+  },
+  "pages": [
+    {
+      "title": "Main - All assets",
+      "reports": [
+        {
+          "title": "",
+          "query": "MATCH (n)-[e]->(m) RETURN n,e,m LIMIT 20\n\n\n",
+          "width": 7,
+          "height": 5,
+          "x": 3,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "ATTACHMENT": "name",
+            "ASSET": "name",
+            "DATASOURCE": "name",
+            "STATICDATA": "name"
+          },
+          "settings": {
+            "enableEditing": true
+          }
+        }
+      ]
+    }
+  ],
+  "parameters": {},
+  "extensions": {}
+}
