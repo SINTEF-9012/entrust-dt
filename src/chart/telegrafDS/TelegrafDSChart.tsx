@@ -10,19 +10,24 @@ const TelegrafDSChart = (props: ChartProps) => {
     type: false,
     manufacturer: false,
     platform: false,
-    system: false,
+    OS: false,
     IP: false,
-    version: false,
     description: false,
+    temperature: false,
     memory: false,
+    system: false,
     disk: false,
-    agent: false,
-    docker: false,
-    packages: false,
+    diskio: false,
+    kernel: false,
     CPU: false,
-    internet: false,
-    temperature: false
+    docker: false,
+    ping: false,
+    data: false
   });
+
+  // State for date selection
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Function to handle checkbox changes
   const handleCheckboxChange = (propertyName, value) => {
@@ -52,29 +57,47 @@ const TelegrafDSChart = (props: ChartProps) => {
 
   return (
     <div style={{ marginTop: '0px', height: '100%', textAlign: 'center' }}>
-      <h3>Device Properties</h3>
+      <h3>Gateway Properties</h3>
       {renderCheckbox('type')}
       {renderCheckbox('manufacturer')}
       {renderCheckbox('platform')}
-      {renderCheckbox('system')}
+      {renderCheckbox('OS')}
       {renderCheckbox('IP')}
-      {renderCheckbox('version')}
       {renderCheckbox('description')}
-      {/* Render other Device Properties checkboxes */}
-
-      <h3>Cyber Properties</h3>
-      {renderCheckbox('memory')}
-      {renderCheckbox('disk')}
-      {renderCheckbox('agent')}
-      {renderCheckbox('docker')}
-      {renderCheckbox('packages')}
-      {renderCheckbox('CPU')}
-      {renderCheckbox('internet')}
-      {/* Render other Cyber Properties checkboxes */}
-
-      <h3>Physical Properties</h3>
       {renderCheckbox('temperature')}
-      {/* Render other Physical Properties checkboxes */}
+      {renderCheckbox('memory')}
+      {renderCheckbox('system')}
+      {renderCheckbox('disk')}
+      {renderCheckbox('diskio')}
+      {renderCheckbox('kernel')}
+      {renderCheckbox('CPU')}
+      {renderCheckbox('docker')}
+
+      <h3>Device Properties</h3>
+      {renderCheckbox('ping')}
+
+      <h3>Device Data</h3>
+      {renderCheckbox('data')}
+
+      <div style={{ marginTop: '20px' }}>
+        <h4>Select Time Frame</h4>
+        <div>
+          <label>Start: </label>
+          <input
+            type="datetime-local"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>End: </label>
+          <input
+            type="datetime-local"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+      </div>
 
       <button 
       style={{ 
