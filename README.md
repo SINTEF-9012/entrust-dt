@@ -25,7 +25,8 @@ docker build -t entrust-dt -f docker/Dockerfile .
 Create and activate environment containing following packages (e.g. in Anaconda, venv):
 ```
 Python (v3.10)
-flask (v3.0.0 or higher) 
+flask (v3.0.0 or higher)
+neo4j (v5.19.0)
 ```
 
 ## Setup
