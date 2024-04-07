@@ -35,33 +35,6 @@ services:
       - "9000:9000"
       - "9099:9099"
 
-  zookeeper:
-    image: 'zookeeper:3.7'
-    networks:
-      - entrust_network
-    ports:
-      - '2181:2181'
-
-  kafka:
-    image: 'confluentinc/cp-kafka:latest'
-    depends_on:
-      - zookeeper
-    networks:
-      - entrust_network
-    ports:
-      - '9092:9092'
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  mqtt_kafka_bridge:
-    image: mqtt-kafka-bridge
-    depends_on:
-      - kafka
-    networks:
-      - entrust_network
-
 
 volumes:
   entrust-minio-s3-volume:
@@ -70,4 +43,3 @@ volumes:
   entrust-neo4j-data-volume:
   entrust-influx-db-data-volume:
   entrust-influx-db-config-volume:
-  entrust-kafka-data-volume:
