@@ -13,12 +13,19 @@ Install dependencies:
 
 ```
 yarn install
+npm install axios
 ```
 
 Build local Docker image (the rest of the Docker images are pulled from web):
 
 ```
 docker build -t entrust-dt -f docker/Dockerfile .
+```
+
+Create and activate environment containing following packages (e.g. in Anaconda, venv):
+```
+Python (v3.10)
+flask (v3.0.0 or higher) 
 ```
 
 ## Setup
@@ -38,7 +45,7 @@ yarn run dev
 Open the dashboard in browser: http://localhost:3000, choose "New Dashboard". 
 Log in with user name: neo4j, password: entrust-neo4j.
 
-If the database is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the most recent dashboard from the "samples" folder. To get the actual data, Open Neo4j Browser at http://localhost:7474. Copy the content in sample-data.cypher and past it into the query box of the Neo4j browser, then execute the query.
+If the database is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the most recent dashboard from the "samples" folder. To get the actual data, Open Neo4j Browser at http://localhost:7474. Copy the content in sample-data.cypher (not the lines under comments) and paste it into the query box of the Neo4j browser and run it.
 
 ## User Guide for NeoDash
 
