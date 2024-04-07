@@ -1,26 +1,26 @@
 ## Description: data simulated for mem, temp, exec, ping Telegraf input plug-ins over 1-5 April 2024
 
-mem,host=raspberryPi total=1073741824i,available=536870912i,used=536870912i,used_percent=50.0 \n
-temp,host=raspberryPi,sensor=cpu temperature=55.0 \n
-ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=12.5,min_response_ms=8.0,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0 \n
-exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7" \n
+mem,host=raspberryPi total=1073741824i,available=536870912i,used=536870912i,used_percent=50.0
+temp,host=raspberryPi,sensor=cpu temperature=55.0
+ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=12.5,min_response_ms=8.0,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0
+exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7"
 
-mem,host=raspberryPi total=1073741824i,available=541870912i,used=531870912i,used_percent=49.5 \n
-temp,host=raspberryPi,sensor=cpu temperature=55.5 \n
-ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.4,max_response_ms=12.8,min_response_ms=8.1,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0 \n
-exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7" \n
+mem,host=raspberryPi total=1073741824i,available=541870912i,used=531870912i,used_percent=49.5
+temp,host=raspberryPi,sensor=cpu temperature=55.5
+ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.4,max_response_ms=12.8,min_response_ms=8.1,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0
+exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7"
 
-mem,host=raspberryPi total=1073741824i,available=546870912i,used=526870912i,used_percent=49.1 \n
-temp,host=raspberryPi,sensor=cpu temperature=56.0 \n
-ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=11.1,min_response_ms=8.2,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0 \n
-exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7" \n
+mem,host=raspberryPi total=1073741824i,available=546870912i,used=526870912i,used_percent=49.1
+temp,host=raspberryPi,sensor=cpu temperature=56.0
+ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=11.1,min_response_ms=8.2,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0
+exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7"
 
-mem,host=raspberryPi total=1073741824i,available=551870912i,used=521870912i,used_percent=48.6 \n
-temp,host=raspberryPi,sensor=cpu temperature=56.5 \n
-ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=13.4,min_response_ms=8.3,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0 \n
-exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7" \n
+mem,host=raspberryPi total=1073741824i,available=551870912i,used=521870912i,used_percent=48.6
+temp,host=raspberryPi,sensor=cpu temperature=56.5
+ping,host=raspberryPi,url=8.8.8.8 average_response_ms=10.2,max_response_ms=13.4,min_response_ms=8.3,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0
+exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7"
 
-mem,host=raspberryPi total=1073741824i,available=556870912i,used=516870912i,used_percent=48.1 \n
-temp,host=raspberryPi,sensor=cpu temperature=57.0 \n
-ping,host=raspberryPi,url=8.8.8.8 average_response_ms=11.0,max_response_ms=13.7,min_response_ms=8.4,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0 \n
-exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7" \n
+mem,host=raspberryPi total=1073741824i,available=556870912i,used=516870912i,used_percent=48.1
+temp,host=raspberryPi,sensor=cpu temperature=57.0
+ping,host=raspberryPi,url=8.8.8.8 average_response_ms=11.0,max_response_ms=13.7,min_response_ms=8.4,packets_transmitted=4i,packets_received=4i,percent_packet_loss=0.0
+exec,host=raspberryPi hostname="raspberryPi",os_version="Raspbian 10 (buster)",docker_version="25.0.0",architecture="ARM32v7"
