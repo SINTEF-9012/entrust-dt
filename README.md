@@ -14,6 +14,7 @@ Install dependencies:
 ```
 yarn install
 npm install axios
+yarn add date-fns
 ```
 
 Build local Docker image (the rest of the Docker images are pulled from web):
@@ -31,16 +32,23 @@ neo4j (v5.19.0)
 
 ## Setup
 
-Launch databases in docker:
+(cmd) Launch databases in docker:
 
 ```
 docker compose up
 ```
 
-Run in another terminal:
+(cmd) Run in another terminal:
 
 ```
 yarn run dev
+```
+
+(venv, Anaconda) Run in environment:
+
+```
+python connection/neo4j_api.py
+python connection/influxdb_api.py
 ```
 
 Open the dashboard in browser: http://localhost:3000, choose "New Dashboard". 
