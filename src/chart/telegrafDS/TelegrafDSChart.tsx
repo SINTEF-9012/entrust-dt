@@ -1,33 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChartProps } from '../Chart';
+import axios from 'axios';
+import { formatISO } from 'date-fns';
 
 const TelegrafDSChart = (props: ChartProps) => {
   const { records } = props;
   const node = records && records[0] && records[0]._fields && records[0]._fields[0] ? records[0]._fields[0] : {};
-
-  // Unified state object to hold the status of all checkboxes
+  const agent_id = node.properties["ID"];
+  // Hold the status of checkboxes:
   const [checkboxStates, setCheckboxStates] = useState({
-    type: false,
-    manufacturer: false,
-    platform: false,
-    OS: false,
-    IP: false,
-    description: false,
-    temperature: false,
-    memory: false,
-    system: false,
-    disk: false,
-    diskio: false,
-    kernel: false,
-    CPU: false,
-    docker: false,
+    exec: false,
+    temp: false,
+    mem: false,
     ping: false,
-    data: false
   });
-
-  // State for date selection
+  // Hold state for date selection
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  // Hold state for gateway ID
+  const [gatewayId, setGatewayId] = useState('');
+  // Fetch ID at mounting
+  useEffect(() => {
+    const fetchId = async () => {
+      try {
+        if (agent_id) { // Ensure agent_id is not undefined
+          const response = await axios.get('http://localhost:5001/get_gateway_id', {
+            params: { agent_id: agent_id } // Send agent_id as a query parameter
+          });
+          setGatewayId(response.data); // Assuming the gateway_id is directly in the response
+          console.log('[TelegrafDSChart.tsx] Fetched gateway id:', response.data);
+        }
+      } catch (error) {
+        console.error('[TelegrafDSChart.tsx] Error in fetching gateway id:', error);
+      }
+    };
+
+    fetchId();
+  }, [agent_id]); // Include agent_id in the dependency array
+
+  // Function to analyze data, activated by user pressing Analyze button
+  const analyzeData = async () => {
+    const selectedMetrics = Object.keys(checkboxStates).filter(key => checkboxStates[key]);
+    try {
+      const response = await axios.get('http://localhost:5000/query_influxdb', {
+        params: {
+          gateway_id: gatewayId,
+          metrics: selectedMetrics.join(','), // Assuming metrics is an array
+          start: startDate,
+          end: endDate
+        } 
+      });
+      console.log(response.data); // For now, just log the response
+      console.log('[TelegrafDSChart.tsx] Fetched user-defined data.');
+    } catch (error) {
+      console.error('[TelegrafDSChart.tsx] Error fetching data:', error);
+    }
+  };
 
   // Function to handle checkbox changes
   const handleCheckboxChange = (propertyName, value) => {
@@ -35,7 +63,6 @@ const TelegrafDSChart = (props: ChartProps) => {
       ...prevState,
       [propertyName]: value
     }));
-
     // Optional: Update backend with new state
   };
 
@@ -57,27 +84,14 @@ const TelegrafDSChart = (props: ChartProps) => {
 
   return (
     <div style={{ marginTop: '0px', height: '100%', textAlign: 'center' }}>
+
       <h3>Gateway Properties</h3>
-      {renderCheckbox('type')}
-      {renderCheckbox('manufacturer')}
-      {renderCheckbox('platform')}
-      {renderCheckbox('OS')}
-      {renderCheckbox('IP')}
-      {renderCheckbox('description')}
-      {renderCheckbox('temperature')}
-      {renderCheckbox('memory')}
-      {renderCheckbox('system')}
-      {renderCheckbox('disk')}
-      {renderCheckbox('diskio')}
-      {renderCheckbox('kernel')}
-      {renderCheckbox('CPU')}
-      {renderCheckbox('docker')}
+      {renderCheckbox('exec')}
+      {renderCheckbox('temp')}
+      {renderCheckbox('mem')}
 
       <h3>Device Properties</h3>
       {renderCheckbox('ping')}
-
-      <h3>Device Data</h3>
-      {renderCheckbox('data')}
 
       <div style={{ marginTop: '20px' }}>
         <h4>Select Time Frame</h4>
@@ -100,13 +114,16 @@ const TelegrafDSChart = (props: ChartProps) => {
       </div>
 
       <button 
-      style={{ 
-      padding: '15px 25px', 
-      fontSize: '20px', 
-      cursor: 'pointer',
-      marginTop: '20px'
-      }} 
-      onClick={() => {/* Handle download action */}}>Download</button>
+        style={{ 
+          padding: '15px 25px', 
+          fontSize: '20px', 
+          cursor: 'pointer',
+          marginTop: '20px'
+        }} 
+        onClick={analyzeData}
+      >
+        Analyze
+      </button>
     </div>
   );
 };

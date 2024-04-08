@@ -21,5 +21,15 @@ CREATE (telegraf1)-[:DATA_OF]->(gateway1)
 CREATE (telegraf2)-[:DATA_OF]->(gateway2)
 CREATE (telegraf3)-[:DATA_OF]->(gateway3)
 
+# Add unique identifiers for all gateways:
+MATCH (g:Gateway)
+SET g.ID = apoc.create.uuid()
+RETURN g
+
+# Add unique identifiers for all agents:
+MATCH (g:TelegrafDS)
+SET g.ID = apoc.create.uuid()
+RETURN g
+
 # Delete everything:
 MATCH (n) DETACH DELETE n
