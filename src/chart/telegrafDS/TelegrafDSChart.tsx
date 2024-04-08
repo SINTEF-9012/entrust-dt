@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ChartProps } from '../Chart';
 import axios from 'axios';
-import { formatISO } from 'date-fns';
 
 const TelegrafDSChart = (props: ChartProps) => {
   const { records } = props;
