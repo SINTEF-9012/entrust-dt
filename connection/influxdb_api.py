@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 from datetime import datetime, timezone
+import pytz
 
 app = Flask(__name__)
 
@@ -22,8 +23,8 @@ def add_cors_headers(response):
 def apply_cors(response):
     return add_cors_headers(response)
 
-@app.route('/query_influxdb', methods=['GET'])
-def query_influxdb():
+@app.route('/influxdb_query_process', methods=['GET'])
+def influxdb_query_process():
     bucket_id = request.args.get('gateway_id')
     metrics = request.args.get('metrics')
     start_time = request.args.get('start')
@@ -52,10 +53,12 @@ def query_influxdb():
     {filter_query}
     """
 
+    print("Query:")
     print(query)
 
     # Execute the query
     result = query_api.query(org=INFLUXDB_ORG, query=query)
+    print(result)
 
 
     # Process the results

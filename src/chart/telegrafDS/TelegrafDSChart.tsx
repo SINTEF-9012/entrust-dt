@@ -24,7 +24,7 @@ const TelegrafDSChart = (props: ChartProps) => {
     const fetchId = async () => {
       try {
         if (agent_id) { // Ensure agent_id is not undefined
-          const response = await axios.get('http://localhost:5001/get_gateway_id', {
+          const response = await axios.get('http://localhost:5001/neo4j_get_gateway_id', {
             params: { agent_id: agent_id } // Send agent_id as a query parameter
           });
           setGatewayId(response.data); // Assuming the gateway_id is directly in the response
@@ -42,7 +42,7 @@ const TelegrafDSChart = (props: ChartProps) => {
   const analyzeData = async () => {
     const selectedMetrics = Object.keys(checkboxStates).filter(key => checkboxStates[key]);
     try {
-      const response = await axios.get('http://localhost:5000/query_influxdb', {
+      const response = await axios.get('http://localhost:5000/influxdb_query_process', {
         params: {
           gateway_id: gatewayId,
           metrics: selectedMetrics.join(','), // Assuming metrics is an array
@@ -50,12 +50,14 @@ const TelegrafDSChart = (props: ChartProps) => {
           end: endDate
         } 
       });
+
       console.log(response.data); // For now, just log the response
       console.log('[TelegrafDSChart.tsx] Fetched user-defined data.');
     } catch (error) {
       console.error('[TelegrafDSChart.tsx] Error fetching data:', error);
     }
   };
+
 
   // Function to handle checkbox changes
   const handleCheckboxChange = (propertyName, value) => {

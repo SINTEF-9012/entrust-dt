@@ -21,8 +21,8 @@ def add_cors_headers(response):
 def apply_cors(response):
     return add_cors_headers(response)
 
-@app.route('/get_gateway_id', methods=['GET'])
-def get_gateway_id():
+@app.route('/neo4j_get_gateway_id', methods=['GET'])
+def neo4j_get_gateway_id():
     agent_id = request.args.get('agent_id')
     print("[neo4j_api.py] Received request to fetch gateway id for agent id:", agent_id)
     with driver.session() as session:
