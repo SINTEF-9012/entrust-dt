@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChartProps } from '../Chart';
 import axios from 'axios';
 import { formatISO } from 'date-fns';
@@ -8,12 +9,18 @@ const TelegrafDSChart = (props: ChartProps) => {
   const node = records && records[0] && records[0]._fields && records[0]._fields[0] ? records[0]._fields[0] : {};
   const agent_id = node.properties["ID"];
   // Hold the status of checkboxes:
+  const agent_id = node.properties["ID"];
+  // Hold the status of checkboxes:
   const [checkboxStates, setCheckboxStates] = useState({
+    exec: false,
+    temp: false,
+    mem: false,
     exec: false,
     temp: false,
     mem: false,
     ping: false,
   });
+  // Hold state for date selection
   // Hold state for date selection
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -87,7 +94,11 @@ const TelegrafDSChart = (props: ChartProps) => {
   return (
     <div style={{ marginTop: '0px', height: '100%', textAlign: 'center' }}>
 
+
       <h3>Gateway Properties</h3>
+      {renderCheckbox('exec')}
+      {renderCheckbox('temp')}
+      {renderCheckbox('mem')}
       {renderCheckbox('exec')}
       {renderCheckbox('temp')}
       {renderCheckbox('mem')}
@@ -116,6 +127,16 @@ const TelegrafDSChart = (props: ChartProps) => {
       </div>
 
       <button 
+        style={{ 
+          padding: '15px 25px', 
+          fontSize: '20px', 
+          cursor: 'pointer',
+          marginTop: '20px'
+        }} 
+        onClick={analyzeData}
+      >
+        Analyze
+      </button>
         style={{ 
           padding: '15px 25px', 
           fontSize: '20px', 
