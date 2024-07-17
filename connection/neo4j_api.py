@@ -26,7 +26,7 @@ def neo4j_get_gateway_id():
     agent_id = request.args.get('agent_id')
     print("[neo4j_api.py] Received request to fetch gateway id for agent id:", agent_id)
     with driver.session() as session:
-        result = session.run("MATCH (a:TelegrafDS)-[:DATA_OF]->(g:Gateway) WHERE a.ID = $agent_id RETURN g.ID AS gateway_id", agent_id=agent_id)
+        result = session.run("MATCH (a:TelegrafDS)-[:MONITOR]->(g:Gateway) WHERE a.uid = $agent_id RETURN g.uid AS gateway_id", agent_id=agent_id)
         gateway_ids = [record["gateway_id"] for record in result]
     print("[neo4j_api.py] Gateway(s) id(s) fetched for agent id:", agent_id)
     print(gateway_ids)

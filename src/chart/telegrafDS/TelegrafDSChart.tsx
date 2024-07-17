@@ -6,7 +6,7 @@ import { formatISO } from 'date-fns';
 const TelegrafDSChart = (props: ChartProps) => {
   const { records } = props;
   const node = records && records[0] && records[0]._fields && records[0]._fields[0] ? records[0]._fields[0] : {};
-  const agent_id = node.properties["ID"];
+  const agent_id = node.properties["uid"];
   // Hold the status of checkboxes:
   const [checkboxStates, setCheckboxStates] = useState({
     exec: false,
@@ -18,7 +18,7 @@ const TelegrafDSChart = (props: ChartProps) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   // Hold state for gateway ID
-  const [gatewayId, setGatewayId] = useState('');
+  const [gateway_id, setGatewayId] = useState('');
   // Fetch ID at mounting
   useEffect(() => {
     const fetchId = async () => {
@@ -44,13 +44,12 @@ const TelegrafDSChart = (props: ChartProps) => {
     try {
       const response = await axios.get('http://localhost:5000/influxdb_query_process', {
         params: {
-          gateway_id: gatewayId,
+          gateway_id: gateway_id,
           metrics: selectedMetrics.join(','), // Assuming metrics is an array
           start: startDate,
           end: endDate
         } 
       });
-
       console.log(response.data); // For now, just log the response
       console.log('[TelegrafDSChart.tsx] Fetched user-defined data.');
     } catch (error) {

@@ -2,27 +2,15 @@
 
 ## Installation
 
-This software requires the following versions of node and yarn:
+This software requires the following versions of node, yarn and npm:
 
 ```
-node version v20.2.0
+node version 20.2.0
 yarn version 1.22.19
+npm version 9.6.6
 ```
 
-Install dependencies:
-
-```
-yarn install
-npm install axios
-```
-
-Build local Docker image (the rest of the Docker images are pulled from web):
-
-```
-docker build -t entrust-dt -f docker/Dockerfile .
-```
-
-Create and activate environment containing following packages (e.g. in Anaconda, venv):
+Create environment containing following packages (e.g. via Anaconda, venv):
 ```
 python (v3.10)
 flask (v3.0.0 or higher)
@@ -30,31 +18,38 @@ neo4j (v5.19.0)
 influxdb-client (latest)
 ```
 
+(cmd) While located in entrust-dt, install dependencies:
+```
+yarn install
+npm install axios
+```
+
 ## Setup
 
-(cmd) Launch databases in docker:
+(cmd) While located in entrust-dt, launch services and databases:
 
 ```
 docker compose up
 ```
 
-(cmd) Run in another terminal:
+(cmd) While located in entrust-dt, in another terminal, run:
 
 ```
 yarn run dev
 ```
 
-(venv, Anaconda) Run in environment:
+(venv, Anaconda) While located in entrust-dt/connection, run in the activate environment:
 
 ```
-python connection/neo4j_api.py
-python connection/influxdb_api.py
+python neo4j_api.py
+python influxdb_api.py
 ```
 
 Open the dashboard in browser: http://localhost:3000, choose "New Dashboard". 
 Log in with user name: neo4j, password: entrust-neo4j.
 
-If the database is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the most recent dashboard from the "samples" folder. To get the actual data, Open Neo4j Browser at http://localhost:7474. Copy the content in sample-data.cypher (not the lines under comments) and paste it into the query box of the Neo4j browser and run it.
+If the database is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the most recent dashboard from the "samples" folder.
+To populate the knowledge graph, open Neo4j Browser at http://localhost:7474. Copy the content in sample-data.cypher (everything before the first comment) and paste it into the query box of the Neo4j browser and run it. 
 
 ## User Guide for NeoDash
 

@@ -20,7 +20,7 @@ export const NeoGraphChartInspectModal = (props: GraphChartVisualizationProps) =
         open={props.interactivity.showPropertyInspector}
         onClose={() => {
             props.interactivity.setPropertyInspectorOpen(false)
-            console.log("here")
+            // console.log("here")
             console.log(props.interactivity.selectedEntity?.id)
           }
         }
