@@ -35,6 +35,18 @@ services:
       - "9000:9000"
       - "9099:9099"
 
+  entrust_grafana:
+      image: grafana/grafana:latest
+      networks:
+        - entrust_network
+      ports:
+        - "3100:3000"
+      volumes:
+        - entrust-grafana-data:/var/lib/grafana
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=entrust_grafana
+        - GF_SECURITY_ALLOW_EMBEDDING=true
+
 
 volumes:
   entrust-minio-s3-volume:
@@ -43,3 +55,4 @@ volumes:
   entrust-neo4j-data-volume:
   entrust-influx-db-data-volume:
   entrust-influx-db-config-volume:
+  entrust-grafana-data:

@@ -1277,7 +1277,7 @@ export const REPORT_TYPES = {
   },
   telegrafDS: {
     label: "TelegrafDS",
-    helperText: "I show the content following the endpoint into a time-series database",
+    helperText: "I allow selection of the content following the endpoint into a time-series database",
     component: TelegrafDSChart,
     maxRecords: 1,
     settings: {}

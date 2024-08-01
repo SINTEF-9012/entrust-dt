@@ -7,97 +7,136 @@ const TelegrafDSChart = (props: ChartProps) => {
   const { records } = props;
   const node = records && records[0] && records[0]._fields && records[0]._fields[0] ? records[0]._fields[0] : {};
   const agent_id = node.properties["uid"];
-  // Hold the status of checkboxes:
+  console.log('[TelegrafDSChart.tsx] Monitoring agent with ID ', agent_id);
+
+  // Hold the state of high-level checkboxes (i.e list Telegraf input plugin):
   const [checkboxStates, setCheckboxStates] = useState({
-    exec: false,
-    temp: false,
     mem: false,
-    ping: false,
+    temp: false,
+    // TODO: Add more input plugins here & in return statement 
   });
+  // Hold the state of low-level checkboxes (i.e list Telegraf input plugin fields):
+  const [metricFields, setMetricFields] = useState({
+    mem: {
+      active: false,
+      available: false,
+      available_percent: false,
+      buffered: false,
+      cached: false,
+      free: false,
+      total: false,
+      used: false,
+      used_percent: false,
+    },
+    temp: {
+      temp: false,
+    }
+    // TODO: Add more input plugins and fields here & in return statement 
+  });
+
   // Hold state for date selection
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  // Hold state for gateway ID
-  const [gateway_id, setGatewayId] = useState('');
-  // Fetch ID at mounting
-  useEffect(() => {
-    const fetchId = async () => {
-      try {
-        if (agent_id) { // Ensure agent_id is not undefined
-          const response = await axios.get('http://localhost:5001/neo4j_get_gateway_id', {
-            params: { agent_id: agent_id } // Send agent_id as a query parameter
-          });
-          setGatewayId(response.data); // Assuming the gateway_id is directly in the response
-          console.log('[TelegrafDSChart.tsx] Fetched gateway id:', response.data);
-        }
-      } catch (error) {
-        console.error('[TelegrafDSChart.tsx] Error in fetching gateway id:', error);
-      }
-    };
-
-    fetchId();
-  }, [agent_id]); // Include agent_id in the dependency array
+  // Hold state for analyzed data
+  const [analyzedData, setAnalyzedData] = useState(null);
+  // Hold state for grafana URL
+  const [grafanaUrl, setGrafanaUrl] = useState('');
 
   // Function to analyze data, activated by user pressing Analyze button
   const analyzeData = async () => {
     const selectedMetrics = Object.keys(checkboxStates).filter(key => checkboxStates[key]);
+    const selectedFields = [];
+    selectedMetrics.forEach(metric => {
+        if (checkboxStates[metric]) {
+            // If high-level metric is checked, include all its subfields
+            const allFieldsSelected = Object.keys(metricFields[metric]).every(field => metricFields[metric][field]);
+            if (allFieldsSelected || !Object.keys(metricFields[metric]).some(field => metricFields[metric][field])) {
+                selectedFields.push(...Object.keys(metricFields[metric]).map(field => `${metric}.${field}`));
+            } else {
+                // Include only the selected subfields
+                Object.keys(metricFields[metric]).forEach(field => {
+                    if (metricFields[metric][field]) {
+                        selectedFields.push(`${metric}.${field}`);
+                    }
+                });
+            }
+        }
+    });
     try {
-      const response = await axios.get('http://localhost:5000/influxdb_query_process', {
-        params: {
-          gateway_id: gateway_id,
-          metrics: selectedMetrics.join(','), // Assuming metrics is an array
-          start: startDate,
-          end: endDate
-        } 
-      });
-      console.log(response.data); // For now, just log the response
-      console.log('[TelegrafDSChart.tsx] Fetched user-defined data.');
+        const response = await axios.get('http://localhost:5000/influxdb_query_process', {
+            params: {
+                agent_id: agent_id,
+                metrics: selectedMetrics.join(','),
+                fields: selectedFields.join(','),
+                start: startDate,
+                end: endDate
+            }
+        });
+        setAnalyzedData(response.data); // Store analyzed data
+        const grafanaUrl = response.data.grafanaUrl; // Assuming the response contains a field grafanaUrl
+        setGrafanaUrl(grafanaUrl); // Set the state with the Grafana URL
+        console.log(response.data);
+        console.log('[TelegrafDSChart.tsx] Fetched user-defined data.');
     } catch (error) {
-      console.error('[TelegrafDSChart.tsx] Error fetching data:', error);
+        console.error('[TelegrafDSChart.tsx] Error fetching data:', error);
     }
   };
 
 
   // Function to handle checkbox changes
-  const handleCheckboxChange = (propertyName, value) => {
-    setCheckboxStates(prevState => ({
-      ...prevState,
-      [propertyName]: value
-    }));
-    // Optional: Update backend with new state
+  const handleCheckboxChange = (propertyName, value, field = null) => {
+    if (field) {
+      setMetricFields(prevState => ({
+        ...prevState,
+        [propertyName]: {
+          ...prevState[propertyName],
+          [field]: value
+        }
+      }));
+    } else {
+      setCheckboxStates(prevState => ({
+        ...prevState,
+        [propertyName]: value
+      }));
+    }
   };
 
   // Function to render a checkbox
-  const renderCheckbox = (propertyName) => {
+  const renderCheckbox = (propertyName, field = null) => {
+    const isChecked = field ? metricFields[propertyName][field] : checkboxStates[propertyName];
+    const label = field ? `${propertyName.charAt(0).toUpperCase() + propertyName.slice(1)}.${field}` : propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
+    const labelStyle = field ? {} : { fontWeight: 'bold' };
+
     return (
       <div style={{ marginBottom: '10px' }}>
         <label>
           <input
             type="checkbox"
-            checked={checkboxStates[propertyName]}
-            onChange={(e) => handleCheckboxChange(propertyName, e.target.checked)}
+            checked={isChecked}
+            onChange={(e) => handleCheckboxChange(propertyName, e.target.checked, field)}
           />
-          {propertyName.charAt(0).toUpperCase() + propertyName.slice(1)}
+          <span style={labelStyle}>{label}</span>
         </label>
       </div>
     );
   };
 
+  const renderSubCheckboxes = (metricName) => {
+    return Object.keys(metricFields[metricName]).map(field => renderCheckbox(metricName, field));
+  };
+
   return (
     <div style={{ marginTop: '0px', height: '100%', textAlign: 'center' }}>
-
-      <h3>Gateway Properties</h3>
-      {renderCheckbox('exec')}
+      <h3>Select Telegraf Plugins</h3>
       {renderCheckbox('temp')}
+      {checkboxStates['temp'] && renderSubCheckboxes('temp')}
       {renderCheckbox('mem')}
-
-      <h3>Device Properties</h3>
-      {renderCheckbox('ping')}
+      {checkboxStates['mem'] && renderSubCheckboxes('mem')}
 
       <div style={{ marginTop: '20px' }}>
-        <h4>Select Time Frame</h4>
+        <h3>Select Time Frame</h3>
         <div>
-          <label>Start: </label>
+          <label>Start (UTC Timezone): </label>
           <input
             type="datetime-local"
             value={startDate}
@@ -105,7 +144,7 @@ const TelegrafDSChart = (props: ChartProps) => {
           />
         </div>
         <div>
-          <label>End: </label>
+          <label>End (UTC Timezone): </label>
           <input
             type="datetime-local"
             value={endDate}
@@ -114,10 +153,10 @@ const TelegrafDSChart = (props: ChartProps) => {
         </div>
       </div>
 
-      <button 
+      <button
         style={{ 
-          padding: '15px 25px', 
-          fontSize: '20px', 
+          padding: '15px 20px', 
+          fontSize: '15px', 
           cursor: 'pointer',
           marginTop: '20px'
         }} 
@@ -125,6 +164,12 @@ const TelegrafDSChart = (props: ChartProps) => {
       >
         Analyze
       </button>
+      <h3>Telegraf Data Visualization</h3>
+      {grafanaUrl && (
+      <div style={{ marginTop: '20px' }}>
+        <iframe src={grafanaUrl} width="100%" height="500px" frameBorder="0"></iframe>
+      </div>
+    )}
     </div>
   );
 };
