@@ -15,6 +15,7 @@ import { SELECTION_TYPES } from './CardConfig';
 import AttachmentChart from '../chart/attachment/AttachmentChart';
 import DataSourceChart from '../chart/datasource/DataSource';
 import TelegrafDSChart from '../chart/telegrafDS/TelegrafDSChart';
+import MisbehaviourChart from '../chart/misbehaviour/MisbehaviourChart';
 
 // TODO: make the reportConfig a interface with not self-documented code
 // Use Neo4j 4.0 subqueries to limit the number of rows returned by overriding the query.
@@ -1279,6 +1280,13 @@ export const REPORT_TYPES = {
     label: "TelegrafDS",
     helperText: "I allow selection of the content following the endpoint into a time-series database",
     component: TelegrafDSChart,
+    maxRecords: 1,
+    settings: {}
+  },
+  misbehaviour: {
+    label: "Misbehaviour",
+    helperText: "I allow misbehaviour detection of the content following the endpoint into a time-series database",
+    component: MisbehaviourChart,
     maxRecords: 1,
     settings: {}
   }

@@ -2,12 +2,13 @@
 
 ## Installation
 
-This software requires the following versions of node, yarn and npm:
+This software requires the following versions of node, yarn, npm and docker:
 
 ```
 node version 20.2.0
 yarn version 1.22.19
 npm version 9.6.6
+docker version 25.0.3
 ```
 
 Create environment containing following packages (e.g. via Anaconda, venv):
@@ -25,6 +26,10 @@ npm install axios
 ```
 
 ## Setup
+
+UDAVA: To enable AI-based Misbehaviour Detection, clone the git repository in the parent folder of the entrust-dt directory, following the link:
+
+https://github.com/SINTEF-9012/Udava
 
 (cmd) While located in entrust-dt, launch services and databases:
 
@@ -50,7 +55,7 @@ Log in with user name: neo4j, password: entrust-neo4j.
 If dashboard is empty, load a dashboard by pressing load dashboard button in left side panel. Choose "Select from file", and choose the "dashboard" file from the "samples" folder.
 To populate the knowledge graph, open Neo4j Browser at http://localhost:7474. Copy the content from sample-data.cypher and paste it into the query box of the Neo4j browser and run it.
 
-## Integration
+## Setup databases
 
 Each element in the knowledge graph will be assigned with an unique ID (uid). This uid connects each device to its storage bucket, but also allows time-series visualization. Three steps enable this functionality:
 

@@ -46,6 +46,18 @@ services:
       environment:
         - GF_SECURITY_ADMIN_PASSWORD=entrust_grafana
         - GF_SECURITY_ALLOW_EMBEDDING=true
+  
+  entrust_udava:
+    build:
+      context: ../Udava  # Path to Dockerfile
+      dockerfile: Dockerfile  # Optional if your Dockerfile is named 'Dockerfile'
+    ports:
+      - "5000:5000"  # Exposing port 5000 for your Flask application
+    volumes:
+      - ../Udava/assets/data/raw:/usr/Udava/assets/data/raw  # Optional: mount local data directory to container
+    networks:
+      - entrust_network
+    command: ["python3", "src/api.py"]  # Override CMD if needed (not necessary here)
 
 
 volumes:

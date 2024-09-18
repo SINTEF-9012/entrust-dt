@@ -42,8 +42,8 @@ const TelegrafDSChart = (props: ChartProps) => {
   // Hold state for grafana URL
   const [grafanaUrl, setGrafanaUrl] = useState('');
 
-  // Function to analyze data, activated by user pressing Analyze button
-  const analyzeData = async () => {
+  // Function to visualize data, activated by user pressing Visualize button
+  const visualizeData = async () => {
     const selectedMetrics = Object.keys(checkboxStates).filter(key => checkboxStates[key]);
     const selectedFields = [];
     selectedMetrics.forEach(metric => {
@@ -63,7 +63,7 @@ const TelegrafDSChart = (props: ChartProps) => {
         }
     });
     try {
-        const response = await axios.get('http://localhost:5000/influxdb_query_process', {
+        const response = await axios.get('http://localhost:5005/influxdb_query_visualization', {
             params: {
                 agent_id: agent_id,
                 metrics: selectedMetrics.join(','),
@@ -160,9 +160,9 @@ const TelegrafDSChart = (props: ChartProps) => {
           cursor: 'pointer',
           marginTop: '20px'
         }} 
-        onClick={analyzeData}
+        onClick={visualizeData}
       >
-        Analyze
+        Visualize
       </button>
       <h3>Telegraf Data Visualization</h3>
       {grafanaUrl && (

@@ -1,5 +1,5 @@
 {
-  "title": "ENTRUST - USE CASE",
+  "title": "ENTRUST - KARDINERO",
   "version": "2.2",
   "settings": {
     "pagenumber": 0,
@@ -35,13 +35,24 @@
           }
         },
         {
-          "title": "Telegraf Data Analysis",
+          "title": "Telegraf Data Visualization",
           "query": "MATCH (n:TelegrafDS) WHERE id(n) = $main_selected_node RETURN n",
           "width": 6,
           "height": 6,
           "x": 5,
           "y": 0,
           "type": "telegrafDS",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Misbehaviour Detection",
+          "query": "MATCH (n:Misbehaviour) WHERE id(n) = $main_selected_node RETURN n",
+          "width": 6,
+          "height": 6,
+          "x": 5,
+          "y": 0,
+          "type": "misbehaviour",
           "selection": {},
           "settings": {}
         }
