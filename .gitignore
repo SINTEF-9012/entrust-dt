@@ -43,3 +43,7 @@ jspm_packages
 
 # temporary files
 *.swp
+
+# Added later
+grafana_config.ini
+influxdb_config.ini

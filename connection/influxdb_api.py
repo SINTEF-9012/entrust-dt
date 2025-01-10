@@ -6,14 +6,18 @@ import requests
 import csv
 import pandas as pd
 import os
+import configparser
+
+# Load configurations from .ini files
+config_grafana = configparser.ConfigParser()
+config_grafana.read('grafana_config.ini')
+
+config_influxdb = configparser.ConfigParser()
+config_influxdb.read('influxdb_config.ini')
 
 app = Flask(__name__)
 
-INFLUXDB_URL = 'http://localhost:8086'
-INFLUXDB_TOKEN = 'entrust_influxdb_admin_token'
-INFLUXDB_ORG = 'entrust'
-GRAFANA_URL = 'http://localhost:3100'  # Your Grafana instance URL
-GRAFANA_SERVICE_ACCOUNT_TOKEN = ""  # OBS! Replace with Grafana generated token in Service Accounts
+# OBS! Grafana token can be fetched from Service Accounts
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
@@ -34,7 +38,7 @@ def influxdb_query_visualization():
     end_time = request.args.get('end')
     print("[influxdb_api.py] InfluxDB query requests "+ str(metrics) + " from agent with id " + bucket_id)
 
-    client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
+    client = InfluxDBClient(url=config_influxdb.get('influxdb','INFLUXDB_URL'), token=config_influxdb.get('influxdb','INFLUXDB_TOKEN'), org=config_influxdb.get('influxdb','INFLUXDB_ORG'))
     query_api = client.query_api()
 
     metrics_list = metrics.split(',') if metrics else []
@@ -59,7 +63,7 @@ def influxdb_query_visualization():
     print("Query:")
     print(query)
 
-    result = query_api.query(org=INFLUXDB_ORG, query=query)
+    result = query_api.query(org=config_influxdb.get('influxdb','INFLUXDB_ORG'), query=query)
     print(result)
 
     output = []
@@ -87,7 +91,7 @@ def influxdb_query_visualization():
 
 def create_grafana_dashboard(agent_id, metrics, fields, start_time, end_time):
     headers = {
-        'Authorization': f'Bearer {GRAFANA_SERVICE_ACCOUNT_TOKEN}',
+        'Authorization': f'Bearer {config_grafana.get('grafana','GRAFANA_SERVICE_ACCOUNT_TOKEN')}',
         'Content-Type': 'application/json'
     }
 
@@ -138,17 +142,17 @@ def create_grafana_dashboard(agent_id, metrics, fields, start_time, end_time):
 
     try:
         print("[influxdb_api.py] Sending request to Grafana with the following payload:")
-        print(f"[influxdb_api.py] URL: {GRAFANA_URL}/api/dashboards/db")
+        print(f"[influxdb_api.py] URL: {config_grafana.get('grafana','GRAFANA_URL')}/api/dashboards/db")
         print("[influxdb_api.py] Headers:", headers)
         print("[influxdb_api.py] Payload:", dashboard)
 
-        response = requests.post(f'{GRAFANA_URL}/api/dashboards/db', headers=headers, json=dashboard)
+        response = requests.post(f'{config_grafana.get('grafana','GRAFANA_URL')}/api/dashboards/db', headers=headers, json=dashboard)
         response.raise_for_status()
 
         dashboard_data = response.json()
         print("[influxdb_api.py] Response from Grafana:", dashboard_data)
 
-        dashboard_url = f"{GRAFANA_URL}/d/{dashboard_data['uid']}/{dashboard_data['slug']}"
+        dashboard_url = f"{config_grafana.get('grafana','GRAFANA_URL')}/d/{dashboard_data['uid']}/{dashboard_data['slug']}"
         return {"url": dashboard_url}
 
     except requests.exceptions.HTTPError as http_err:
@@ -169,7 +173,7 @@ def influxdb_query_by_points():
         asset_name = request.args.get('asset_name')
         print("[influxdb_api.py] InfluxDB query requests last "+ str(number_points) + " points from traced asset in bucket tracer_" + bucket_id)
 
-        client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
+        client = InfluxDBClient(url=config_influxdb.get('influxdb','INFLUXDB_URL'), token=config_influxdb.get('influxdb','INFLUXDB_TOKEN'), org=config_influxdb.get('influxdb','INFLUXDB_ORG'))
         query_api = client.query_api()
 
         # Query the last numPoints points from the specified bucket:
@@ -179,7 +183,7 @@ def influxdb_query_by_points():
             |> sort(columns: ["timestamp"], desc: true) 
             |> limit(n: {number_points})
         '''
-        result = query_api.query(org=INFLUXDB_ORG, query=query)
+        result = query_api.query(org=config_influxdb.get('influxdb','INFLUXDB_ORG'), query=query)
 
         # Process the result
         response_data = []
