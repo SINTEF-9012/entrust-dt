@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 from neo4j import GraphDatabase
+import configparser
+
+
+config_neo4j = configparser.ConfigParser()
+config_neo4j.read('neo4j_config.ini')
 
 app = Flask(__name__)
 
 # Configure Neo4j connection - TODO: Create .ini file for this too.
-uri = "bolt://localhost:7687"  # Replace with your Neo4j instance
-username = "neo4j"             # Replace with your username
-password = "entrust-neo4j"        # Replace with your password
-driver = GraphDatabase.driver(uri, auth=(username, password))
+driver = GraphDatabase.driver(config_neo4j.get('neo4j','NEO4J_URI'), auth=(config_neo4j.get('neo4j','NEO4J_USERNAME'), config_neo4j.get('neo4j','NEO4J_PASSWORD')))
 
 # Define a function to set the CORS headers
 def add_cors_headers(response):
