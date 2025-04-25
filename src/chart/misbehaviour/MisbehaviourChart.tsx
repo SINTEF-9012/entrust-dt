@@ -7,7 +7,7 @@ const MisbehaviourChart = (props: ChartProps) => {
   const node = records && records[0] && records[0]._fields && records[0]._fields[0] ? records[0]._fields[0] : {};
   const asset_id = node.properties["uid"];
   const asset_name_full = node.properties["name"];
-  console.log('[MisbehaviourChart.tsx] Clicked on ', asset_name_full);
+  // console.log('[MisbehaviourChart.tsx] Clicked on ', asset_name_full);
   const asset_name = asset_name_full.split('_')[0];
 
   // Hold the state of checkboxes for monitored properties in columns:
@@ -122,7 +122,7 @@ const MisbehaviourChart = (props: ChartProps) => {
     <div style={{ marginTop: '0px', height: '100%', textAlign: 'center' }}>
      
       <h3>
-        To access UDAVA GUI, click <a href="http://localhost:5000/" target="_blank" rel="noopener noreferrer">HERE</a>.
+        To access AI-based Misbehaviour Detection Module GUI, click <a href="http://localhost:5000/" target="_blank" rel="noopener noreferrer">HERE</a>.
       </h3>
     </div>
   );

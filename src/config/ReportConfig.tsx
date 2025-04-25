@@ -14,8 +14,12 @@ import NeoMarkdownChart from '../chart/markdown/MarkdownChart';
 import { SELECTION_TYPES } from './CardConfig';
 import AttachmentChart from '../chart/attachment/AttachmentChart';
 import DataSourceChart from '../chart/datasource/DataSource';
-import TelegrafDSChart from '../chart/telegrafDS/TelegrafDSChart';
+import TracerChart from '../chart/tracer/TracerChart';
 import MisbehaviourChart from '../chart/misbehaviour/MisbehaviourChart';
+import DesignChart from '../chart/design/DesignChart';
+import TopologyChart from '../chart/topology/TopologyChart';
+import DeploymentChart from '../chart/deployment/DeploymentChart';
+
 
 // TODO: make the reportConfig a interface with not self-documented code
 // Use Neo4j 4.0 subqueries to limit the number of rows returned by overriding the query.
@@ -1276,10 +1280,10 @@ export const REPORT_TYPES = {
     maxRecords: 1,
     settings: {}
   },
-  telegrafDS: {
-    label: "TelegrafDS",
+  tracer: {
+    label: "Tracer",
     helperText: "I allow selection of the content following the endpoint into a time-series database",
-    component: TelegrafDSChart,
+    component: TracerChart,
     maxRecords: 1,
     settings: {}
   },
@@ -1287,6 +1291,27 @@ export const REPORT_TYPES = {
     label: "Misbehaviour",
     helperText: "I allow misbehaviour detection of the content following the endpoint into a time-series database",
     component: MisbehaviourChart,
+    maxRecords: 1,
+    settings: {}
+  },
+  design: {
+    label: "Design",
+    helperText: "I allow creating new device nodes in the design phase, by adding these to the graph database",
+    component: DesignChart,
+    maxRecords: 1,
+    settings: {}
+  },
+  topology: {
+    label: "Topology",
+    helperText: "I allow linking nodes from the design phase, and adding this topology to graph database in pre-deployment",
+    component: TopologyChart,
+    maxRecords: 1000,
+    settings: {}
+  },
+  deployment: {
+    label: "Deployment",
+    helperText: "I allow the runtime graph to be updated with deployed topology",
+    component: DeploymentChart,
     maxRecords: 1,
     settings: {}
   }

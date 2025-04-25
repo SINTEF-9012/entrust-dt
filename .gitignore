@@ -47,3 +47,6 @@ jspm_packages
 # Added later
 *.ini
 Inference/
+*.csv
+Data/
+connection/api/downloads/

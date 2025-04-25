@@ -1,0 +1,186 @@
+{
+  "title": "ENTRUST",
+  "version": "2.2",
+  "settings": {
+    "pagenumber": 0,
+    "editable": true,
+    "fullscreenEnabled": false,
+    "parameters": {
+      "neodash_annotation_endpoint": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg/1920px-Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg",
+      "neodash_annotation_endpoint_display": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg/1920px-Anim1754_-_Flickr_-_NOAA_Photo_Library.jpg",
+      "neodash_asset_layer": "Physical",
+      "neodash_asset_layer_display": "Physical",
+      "main_selected_node": 15
+    }
+  },
+  "pages": [
+    {
+      "title": "Design-time Phase",
+      "reports": [
+        {
+          "title": "Knowledge Graph",
+          "query":  "MATCH (n)-[e]->(m) WHERE n.phase = 'design' AND m.phase = 'design' RETURN n,e,m LIMIT 50\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Device": "name",
+            "Tracer": "(label)",
+            "Misbehaviour" : "(label)"
+          },
+          "settings": {
+            "enableEditing": true
+          }
+        },
+        {
+          "title": "Device Emulation Design",
+          "query": "MATCH (n) RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 4,
+          "x": 6,
+          "y": 2,
+          "type": "design",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Tracer Data Loading, Saving and Visualization",
+          "query": "MATCH (n:Tracer) WHERE id(n) = $main_selected_node RETURN n",
+          "width": 6,
+          "height": 6,
+          "x": 0,
+          "y": 0,
+          "type": "tracer",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Misbehaviour Detection",
+          "query": "MATCH (n) RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 1,
+          "x": 6,
+          "y": 0,
+          "type": "misbehaviour",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Pre-deployment Phase",
+      "reports": [
+        {
+          "title": "Knowledge Graph",
+          "query": "MATCH (n)-[e]->(m) WHERE n.phase = 'predeployment' AND m.phase = 'predeployment' RETURN n,e,m LIMIT 100\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Device": "name",
+            "Tracer": "(label)",
+            "Misbehaviour" : "(label)"
+          },
+          "settings": {
+            "enableEditing": true
+          }
+        },
+        {
+          "title": "Connected Devices Emulation Design",
+          "query": "MATCH (d:Device) WHERE d.phase = 'design' OR d.phase = 'predeployment'  RETURN d",
+          "width": 5,
+          "height": 2,
+          "x": 6,
+          "y": 2,
+          "type": "topology",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Tracer Data Loading, Saving and Visualization",
+          "query": "MATCH (n:Tracer) WHERE id(n) = $main_selected_node RETURN n",
+          "width": 6,
+          "height": 6,
+          "x": 0,
+          "y": 0,
+          "type": "tracer",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Misbehaviour Detection",
+          "query": "MATCH (n) RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 1,
+          "x": 6,
+          "y": 0,
+          "type": "misbehaviour",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Runtime Phase",
+      "reports": [
+        {
+          "title": "Knowledge Graph",
+          "query": "MATCH (n)-[e]->(m) WHERE n.phase = 'runtime' AND m.phase = 'runtime' RETURN n,e,m LIMIT 50\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Device": "name",
+            "Tracer": "(label)",
+            "Misbehaviour" : "(label)",
+            "Realtime" : "(label)"
+          },
+          "settings": {
+            "enableEditing": true
+          }
+        },
+        {
+          "title": "Connected Devices Deployment",
+          "query": "MATCH (n) RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 1,
+          "x": 6,
+          "y": 2,
+          "type": "deployment",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Tracer Data Loading, Saving and Visualization",
+          "query": "MATCH (n:Tracer) WHERE id(n) = $main_selected_node RETURN n",
+          "width": 6,
+          "height": 6,
+          "x": 0,
+          "y": 0,
+          "type": "tracer",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Misbehaviour Detection",
+          "query": "MATCH (n) RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 1,
+          "x": 6,
+          "y": 0,
+          "type": "misbehaviour",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    }
+  ],
+  "parameters": {},
+  "extensions": {}
+}
