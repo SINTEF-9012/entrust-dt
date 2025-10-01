@@ -15,6 +15,7 @@ import { SELECTION_TYPES } from './CardConfig';
 import AttachmentChart from '../chart/attachment/AttachmentChart';
 import DataSourceChart from '../chart/datasource/DataSource';
 import TracerChart from '../chart/tracer/TracerChart';
+import AttackChart from '../chart/attack/AttackChart';
 import MisbehaviourChart from '../chart/misbehaviour/MisbehaviourChart';
 import DesignChart from '../chart/design/DesignChart';
 import TopologyChart from '../chart/topology/TopologyChart';
@@ -1285,7 +1286,9 @@ export const REPORT_TYPES = {
     helperText: "I allow selection of the content following the endpoint into a time-series database",
     component: TracerChart,
     maxRecords: 1,
-    settings: {}
+    settings: {
+      allowTypes: ["Tracer", "DomainTracer"]
+    }
   },
   misbehaviour: {
     label: "Misbehaviour",
@@ -1298,6 +1301,13 @@ export const REPORT_TYPES = {
     label: "Design",
     helperText: "I allow creating new device nodes in the design phase, by adding these to the graph database",
     component: DesignChart,
+    maxRecords: 1,
+    settings: {}
+  },
+  attack: {
+    label: "Attack",
+    helperText: "I support performing attack simulation in the emulated environment",
+    component: AttackChart,
     maxRecords: 1,
     settings: {}
   },

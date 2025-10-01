@@ -66,6 +66,17 @@
           "type": "misbehaviour",
           "selection": {},
           "settings": {}
+        },
+        {
+          "title": "Attack Simulation",
+          "query": "MATCH (d:Device) WHERE d.phase = 'design' AND id(d) = $main_selected_node RETURN d",
+          "width": 5,
+          "height": 2,
+          "x": 6,
+          "y": 6,
+          "type": "attack",
+          "selection": {},
+          "settings": {}
         }
       ]
     },
@@ -102,7 +113,7 @@
         },
         {
           "title": "Tracer Data Loading, Saving and Visualization",
-          "query": "MATCH (n:Tracer) WHERE id(n) = $main_selected_node RETURN n",
+          "query": "MATCH (n) WHERE (n:Tracer OR n:DomainTracer) AND id(n) = $main_selected_node RETURN n",
           "width": 6,
           "height": 6,
           "x": 0,
@@ -119,6 +130,17 @@
           "x": 6,
           "y": 0,
           "type": "misbehaviour",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Attack Simulation",
+          "query": "MATCH (n) WHERE n.phase = 'predeployment' RETURN n UNION RETURN null AS n LIMIT 1",
+          "width": 5,
+          "height": 2,
+          "x": 6,
+          "y": 4,
+          "type": "attack",
           "selection": {},
           "settings": {}
         }
@@ -158,7 +180,7 @@
         },
         {
           "title": "Tracer Data Loading, Saving and Visualization",
-          "query": "MATCH (n:Tracer) WHERE id(n) = $main_selected_node RETURN n",
+          "query": "MATCH (n) WHERE (n:Tracer OR n:DomainTracer) AND id(n) = $main_selected_node RETURN n",
           "width": 6,
           "height": 6,
           "x": 0,

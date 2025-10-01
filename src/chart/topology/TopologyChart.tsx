@@ -39,11 +39,16 @@ const TopologyChart = (props: ChartProps) => {
         const result = await response.json();
         // Add buckets if not present from before: 
         for (const item of result) {
+          console.log(item);
           const bucket_s = 'predeployment-' + item.s.uid;
           await axios.post('http://localhost:5002/influxdb_add_bucket', { bucket: bucket_s });
         
           const bucket_t = 'predeployment-' + item.t.uid;
           await axios.post('http://localhost:5002/influxdb_add_bucket', { bucket: bucket_t });
+
+          // DomainTracer bucket 
+          const bucket_dt = 'predeployment-' + item.dt.uid;
+          await axios.post('http://localhost:5002/influxdb_add_bucket', { bucket: bucket_dt });
         }
   
         if (response.ok) {

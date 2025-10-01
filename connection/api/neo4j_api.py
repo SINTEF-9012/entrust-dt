@@ -196,13 +196,51 @@ def neo4j_add_relation():
     try:
         with driver.session() as session:
             session_result = session.run(query)
+            # Ensure DomainTracer exists and connects to all predeployment tracers
+            domain_tracer_query = """
+                MERGE (domain:DomainTracer {phase: 'predeployment'})
+                ON CREATE SET domain.uid = apoc.create.uuid(),
+                            domain.type = 'functional',
+                            domain.name = 'domain_tracer'
+                WITH domain
+                MERGE (domainMis:Misbehaviour {uid: domain.uid, phase: domain.phase})
+                ON CREATE SET domainMis.type = 'functional',
+                            domainMis.name = domain.name + "_misbehaviour"
+                MERGE (domainMis)-[:ANALYZES]->(domain)
+            """
+            session.run(domain_tracer_query)
+            add_bucket_query = """
+            MATCH (domain:DomainTracer)
+            SET domain.bucket = 'predeployment-' + domain.uid
+            RETURN domain
+            """
+            domain_result = session.run(add_bucket_query)
+            # If DomainTracer was created, add it to the results
             results = [
                 {
                     "s": record["s"]._properties,
-                    "t": record["t"]._properties
+                    "t": record["t"]._properties,
                 }
                 for record in session_result
             ]
+            results_domain = [
+                {
+                    "dt": record["domain"]._properties
+                }
+                for record in domain_result
+            ]
+            if results_domain:
+                dt_props = results_domain[0]["dt"]  # there’s only one DomainTracer
+                for res in results:
+                    res["dt"] = dt_props
+            connect_tracer_query = """
+                MATCH (domain:DomainTracer {phase: 'predeployment'})
+                MATCH (t:Tracer {phase: 'predeployment'})
+                MERGE (domain)-[:AGGREGATES]->(t)
+            """
+            session.run(connect_tracer_query)
+        print("HERE")
+        print(results)
         return jsonify(results), 200
     except Exception as e:
         print("[neo4j_api.py] Error executing Neo4j query:", e)
@@ -509,16 +547,51 @@ def neo4j_deployment():
             """
             session.run(query)
 
-            # Collect runtime Tracer buckets only
+            # 2. Ensure DomainTracer exists
+            domain_tracer_query = """
+            MERGE (domain:DomainTracer {phase: 'runtime'})
+            ON CREATE SET domain.uid = randomUUID(),
+                          domain.type = 'functional',
+                          domain.name = 'domain_tracer'
+            WITH domain
+            MERGE (domainMis:Misbehaviour {uid: domain.uid, phase: domain.phase})
+            ON CREATE SET domainMis.type = 'functional',
+                          domainMis.name = domain.name + "_misbehaviour"
+            MERGE (domainMis)-[:ANALYZES]->(domain)
+            """
+            session.run(domain_tracer_query)
+
+            # 3. Set DomainTracer bucket separately and return node
+            add_bucket_query = """
+            MATCH (domain:DomainTracer {phase: 'runtime'})
+            SET domain.bucket = 'runtime-' + domain.uid
+            RETURN domain
+            """
+            domain_result = session.run(add_bucket_query)
+
+            # 4. Connect DomainTracer to all runtime tracers
+            connect_query = """
+            MATCH (domain:DomainTracer {phase: 'runtime'})
+            MATCH (t:Tracer {phase: 'runtime'})
+            MERGE (domain)-[:AGGREGATES]->(t)
+            """
+            session.run(connect_query)
+
+            # Collect runtime Tracer buckets (incl. DomainTracer bucket)
+            #bucket_query = """
+            #    MATCH (t:Tracer {phase: 'runtime'})
+            #    RETURN t.bucket AS bucket
+            #"""
             bucket_query = """
                 MATCH (t:Tracer {phase: 'runtime'})
                 RETURN t.bucket AS bucket
+                UNION
+                MATCH (dt:DomainTracer {phase: 'runtime'})
+                RETURN dt.bucket AS bucket
             """
             result = session.run(bucket_query)
             buckets = [record["bucket"] for record in result]
-
             # return jsonify({"status": "Deployment complete."}), 200
-
             print(f"[neo4j_api.py] Deployment complete. Buckets have been created.")
             return jsonify({"buckets": buckets}), 200
 
