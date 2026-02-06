@@ -6,6 +6,7 @@ import os
 import yaml
 
 
+# Note: <>_config.ini needs to be provided in advance and added to connection/api folder
 config_neo4j = configparser.ConfigParser()
 config_neo4j.read('neo4j_config.ini')
 
@@ -81,14 +82,7 @@ def neo4j_add_relation():
                     bucket: s.phase + "-" + s.uid
                 }})
                 MERGE (srcTracer)-[:MONITORS]->(s)
-                CREATE (srcMis:Misbehaviour {{
-                    type: "functional",
-                    name: srcTracer.name + "_misbehaviour",
-                    phase: srcTracer.phase,
-                    uid: srcTracer.uid
-                }})
-                MERGE (srcMis)-[:ANALYZES]->(srcTracer)
-                RETURN srcTracer, srcMis
+                RETURN srcTracer
             }}
             CALL {{
                 WITH t
@@ -100,14 +94,7 @@ def neo4j_add_relation():
                     bucket: t.phase + "-" + t.uid
                 }})
                 MERGE (tgtTracer)-[:MONITORS]->(t)
-                CREATE (tgtMis:Misbehaviour {{
-                    type: "functional",
-                    name: tgtTracer.name + "_misbehaviour",
-                    phase: tgtTracer.phase,
-                    uid: tgtTracer.uid
-                }})
-                MERGE (tgtMis)-[:ANALYZES]->(tgtTracer)
-                RETURN tgtTracer, tgtMis
+                RETURN tgtTracer
             }}
             MERGE (s)-[:CONNECTS_TO]->(t)
             RETURN s, t
@@ -125,37 +112,30 @@ def neo4j_add_relation():
         if deviceTargetPhase == "design" and deviceSourcePhase == "predeployment":
             # Target in design phase and source in predeployment
             query = f"""
-                MATCH (s:Device {{uid: '{deviceSourceUid}', phase: 'predeployment'}})
-                MATCH (target:Device {{uid: '{deviceTargetUid}', phase: 'design'}})
-                CALL {{
-                    WITH target
-                    CREATE (t:Device)
-                    SET t = target
-                    SET t.uid = apoc.create.uuid(),
-                        t.phase = 'predeployment'
-                    RETURN t
-                }}
-                CALL {{
-                    WITH t
-                    CREATE (tracer:Tracer {{
-                        type: "functional",
-                        name: t.name + "_tracer",
-                        phase: t.phase,
-                        uid: t.uid,
-                        bucket: t.phase + "-" + t.uid
-                    }})
-                    MERGE (tracer)-[:MONITORS]->(t)
-                    CREATE (mis:Misbehaviour {{
-                        type: "functional",
-                        name: tracer.name + "_misbehaviour",
-                        phase: tracer.phase,
-                        uid: tracer.uid
-                    }})
-                    MERGE (mis)-[:ANALYZES]->(tracer)
-                    RETURN tracer, mis
-                }}
-                MERGE (s)-[:CONNECTS_TO]->(t)
-                RETURN s, t
+            MATCH (s:Device {{uid: '{deviceSourceUid}', phase: 'predeployment'}})
+            MATCH (target:Device {{uid: '{deviceTargetUid}', phase: 'design'}})
+            CALL {{
+                WITH target
+                CREATE (t:Device)
+                SET t = target
+                SET t.uid = apoc.create.uuid(),
+                    t.phase = 'predeployment'
+                RETURN t
+            }}
+            CALL {{
+                WITH t
+                CREATE (tracer:Tracer {{
+                    type: "functional",
+                    name: t.name + "_tracer",
+                    phase: t.phase,
+                    uid: t.uid,
+                    bucket: t.phase + "-" + t.uid
+                }})
+                MERGE (tracer)-[:MONITORS]->(t)
+                RETURN tracer
+            }}
+            MERGE (s)-[:CONNECTS_TO]->(t)
+            RETURN s, t
             """
         else:
             # Source in design phase and target in predeployment
@@ -180,14 +160,7 @@ def neo4j_add_relation():
                     bucket: s.phase + "-" + s.uid
                 }})
                 MERGE (tracer)-[:MONITORS]->(s)
-                CREATE (mis:Misbehaviour {{
-                    type: "functional",
-                    name: tracer.name + "_misbehaviour",
-                    phase: tracer.phase,
-                    uid: tracer.uid
-                }})
-                MERGE (mis)-[:ANALYZES]->(tracer)
-                RETURN tracer, mis
+                RETURN tracer
             }}
             MERGE (s)-[:CONNECTS_TO]->(t)
             RETURN s, t
@@ -198,15 +171,10 @@ def neo4j_add_relation():
             session_result = session.run(query)
             # Ensure DomainTracer exists and connects to all predeployment tracers
             domain_tracer_query = """
-                MERGE (domain:DomainTracer {phase: 'predeployment'})
-                ON CREATE SET domain.uid = apoc.create.uuid(),
-                            domain.type = 'functional',
-                            domain.name = 'domain_tracer'
-                WITH domain
-                MERGE (domainMis:Misbehaviour {uid: domain.uid, phase: domain.phase})
-                ON CREATE SET domainMis.type = 'functional',
-                            domainMis.name = domain.name + "_misbehaviour"
-                MERGE (domainMis)-[:ANALYZES]->(domain)
+            MERGE (domain:DomainTracer {phase: 'predeployment'})
+            ON CREATE SET domain.uid = apoc.create.uuid(),
+                        domain.type = 'functional',
+                        domain.name = 'domain_tracer'
             """
             session.run(domain_tracer_query)
             add_bucket_query = """
@@ -283,17 +251,7 @@ def neo4j_add_node():
             bucket: d.phase + "-" + d.uid
         }})
         MERGE (t)-[:MONITORS]->(d)
-
-        WITH d, t
-        CREATE (mis:Misbehaviour {{
-            type: "functional",
-            name: t.name + "_misbehaviour",
-            phase: t.phase,
-            uid: t.uid
-        }})
-        MERGE (mis)-[:ANALYZES]->(t)
-
-        RETURN d, t, mis
+        RETURN d, t
     """
     print("[neo4j_api.py] Received query to execute in Neo4j:\n", query)
     try:
@@ -431,7 +389,7 @@ def neo4j_load_topology():
                 # 2a. Create Device node
                 query = f"CREATE (n:{labels}) SET n = $props"
                 session.run(query, {"props": props})
-                # 2b. Create Tracer and Misbehaviour nodes for this device
+                # 2b. Create Tracer for this device
                 tracer_props = {
                     "type": "functional",
                     "name": f"{name}_tracer",
@@ -439,27 +397,18 @@ def neo4j_load_topology():
                     "uid": uid,
                     "bucket": f"{phase}-{uid}"
                 }
-                mis_props = {
-                    "type": "functional",
-                    "name": f"{name}_tracer_misbehaviour",
-                    "phase": phase,
-                    "uid": uid
-                }
+               
                 session.run("""
                     CALL {
                         MATCH (d:Device {uid: $uid})
                         WITH d LIMIT 1
                         CREATE (t:Tracer)
                         SET t = $tracer_props
-                        CREATE (m:Misbehaviour)
-                        SET m = $mis_props
                         MERGE (t)-[:MONITORS]->(d)
-                        MERGE (m)-[:ANALYZES]->(t)
                     }
                 """, {
                     "uid": uid,
-                    "tracer_props": tracer_props,
-                    "mis_props": mis_props
+                    "tracer_props": tracer_props
                 })
             # 3. Create relationships using uid from mapped ids
             for rel in relationships:
@@ -485,10 +434,33 @@ def neo4j_load_topology():
                     })
             #print(f"[neo4j_api.py] Created {len(relationships)} relationships.")
             #return jsonify({"status": "Topology loaded successfully."}), 200
+            # Ensure DomainTracer exists and connects to all predeployment tracers
+            domain_tracer_query = """
+            MERGE (domain:DomainTracer {phase: 'predeployment'})
+            ON CREATE SET domain.uid = apoc.create.uuid(),
+                        domain.type = 'functional',
+                        domain.name = 'domain_tracer'
+            """
+            session.run(domain_tracer_query)
+            add_bucket_query = """
+            MATCH (domain:DomainTracer)
+            SET domain.bucket = 'predeployment-' + domain.uid
+            RETURN domain
+            """
+            session.run(add_bucket_query)
+            connect_tracer_query = """
+                MATCH (domain:DomainTracer {phase: 'predeployment'})
+                MATCH (t:Tracer {phase: 'predeployment'})
+                MERGE (domain)-[:AGGREGATES]->(t)
+            """
+            session.run(connect_tracer_query)
             # 4. Collect all Tracer buckets
             bucket_query = """
                 MATCH (t:Tracer {phase: 'predeployment'})
                 RETURN t.uid AS uid, t.bucket AS bucket
+                UNION
+                MATCH (dt:DomainTracer {phase: 'predeployment'})
+                RETURN dt.uid AS uid, dt.bucket AS bucket
             """
             result = session.run(bucket_query)
             buckets = {record["uid"]: record["bucket"] for record in result}
@@ -526,13 +498,6 @@ def neo4j_deployment():
                     bucket: dClone.phase + "-" + dClone.uid
                 })
                 MERGE (t)-[:MONITORS]->(dClone)
-                CREATE (m:Misbehaviour {
-                    type: "functional",
-                    name: t.name + "_misbehaviour",
-                    phase: t.phase,
-                    uid: t.uid
-                })
-                MERGE (m)-[:ANALYZES]->(t)
                 RETURN dClone
             }
 
@@ -553,11 +518,6 @@ def neo4j_deployment():
             ON CREATE SET domain.uid = randomUUID(),
                           domain.type = 'functional',
                           domain.name = 'domain_tracer'
-            WITH domain
-            MERGE (domainMis:Misbehaviour {uid: domain.uid, phase: domain.phase})
-            ON CREATE SET domainMis.type = 'functional',
-                          domainMis.name = domain.name + "_misbehaviour"
-            MERGE (domainMis)-[:ANALYZES]->(domain)
             """
             session.run(domain_tracer_query)
 

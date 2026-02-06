@@ -50,3 +50,4 @@ Inference/
 *.csv
 Data/
 connection/api/downloads/
+connection/api/test_api/

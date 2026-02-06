@@ -63,7 +63,6 @@ services:
     environment:
       MINIO_ACCESS_KEY: entrust_minio_access_key
       MINIO_SECRET_KEY: entrust_minio_secret_key
-
       MINIO_ROOT_USER: entrust_minio
       MINIO_ROOT_PASSWORD: entrust_minio
     command: server --address 0.0.0.0:9000 --console-address ":9099" /data

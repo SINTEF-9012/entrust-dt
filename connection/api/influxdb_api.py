@@ -9,12 +9,13 @@ import os
 import configparser
 import io
 
-# Load configurations from .ini files
-config_grafana = configparser.ConfigParser()
-config_grafana.read('grafana_config.ini')
-
+# Note: <>_config.ini files need to be provided in advance and added to connection/api folder
+# InfluxDB
 config_influxdb = configparser.ConfigParser()
 config_influxdb.read('influxdb_config.ini')
+# Grafana
+config_grafana = configparser.ConfigParser()
+config_grafana.read('grafana_config.ini')
 
 app = Flask(__name__)
 

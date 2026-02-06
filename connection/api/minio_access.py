@@ -5,6 +5,7 @@ import time
 from datetime import timedelta
 import os
 from urllib.parse import urlparse, urlunparse
+import json
 
 
 client = None
@@ -165,7 +166,36 @@ def download_last_object(bucket_name, file_path, prefix = None, version_id=None)
         print("[minio_access.py] Local download complete.")
     except S3Error as exc:
         print("[minio_access.py] Error occurred:", exc)
-   
+
+def get_last_object(bucket_name, version_id=None):
+    '''
+        Get lastly modified/added object data from given bucket.
+    '''
+    global client
+    try:
+        main()
+    except S3Error as exc:
+        print("[minio_access.py] Error occurred.", exc)
+    # Get all objects in the bucket
+    objects = list(client.list_objects(bucket_name, recursive=True))
+    if not objects:
+        # No objects found – decide what you want to do here
+        return None
+    # Pick the latest object by last_modified
+    last_obj = max(objects, key=lambda o: o.last_modified)
+    response = None
+    try:
+        response = client.get_object(bucket_name, last_obj.object_name)
+        data = response.read()
+        try:
+            return json.loads(data.decode("utf-8"))
+        except Exception:
+            # Not JSON
+            return data
+    finally:
+        if response is not None:
+            response.close()
+            response.release_conn()
 
 def upload_object(bucket_name, object_name, file_path, prefix = None, metadata = None):
     '''
